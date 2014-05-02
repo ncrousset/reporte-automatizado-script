@@ -2,7 +2,7 @@
 /**
  * Rudys Natanael Acosta Crousset.
  * User: rudys
- * Date: 05/01/14
+ * Date: 05/02/14
  * Time: 10:35 AM
  */
 
@@ -14,18 +14,18 @@ namespace lib\cron;
 require_once 'ParametroInterface.php';
 
 /**
- * Class Minuto
+ * Class Hora
  *
  * @package lib\cron
  * @author Rudys Natanael Acosta Crousset <natanael926@gmail.com>
  */
-class Minuto implements \lib\cron\ParametroInterface {
+class Hora implements \lib\cron\ParametroInterface {
 
     /**
      * El limite de repetición es el numeró máximo,
      * para crear una determinada frecuencia.
      */
-    const LIMITE_REPETICON  = 60;
+    const LIMITE_REPETICON  = 24;
 
     /**
      * El valor minimo de los minuto
@@ -40,7 +40,7 @@ class Minuto implements \lib\cron\ParametroInterface {
     /**
      * @var null
      */
-    private $_dateMinuto = null;
+    private $_dateHora = null;
 
     /**
      * @var bool
@@ -48,7 +48,7 @@ class Minuto implements \lib\cron\ParametroInterface {
     public $valido = false;
 
     /**
-     * @return Minuto|null
+     * @return Hora|null
      */
     public static function getInstance() {
 
@@ -67,7 +67,7 @@ class Minuto implements \lib\cron\ParametroInterface {
      */
     public function init($fecha, $expresion) {
 
-        $this->_dateMinuto = $fecha->format("i");
+        $this->_dateHora = $fecha->format("H");
         $this->detalle($expresion);
 
     }
@@ -82,33 +82,33 @@ class Minuto implements \lib\cron\ParametroInterface {
             return true;
         }
 
-        $expMinutos = explode(",", $expresion);
+        $expHoras = explode(",", $expresion);
 
-        foreach($expMinutos as $exp) {
+        foreach($expHoras as $exp) {
             $detalleExp = explode("/", $exp);
 
             // Si la excreción es continua ejp: 1-5
             if(preg_match("/-/", $detalleExp[0])) {
-                $minutosContinuos = explode("-", $exp);
+                $horasContinuos = explode("-", $exp);
 
-                if($minutosContinuos[0] < $minutosContinuos[1]) {
-                    while($minutosContinuos[0] <= $minutosContinuos[1]) {
-                        if($minutosContinuos[0] == $this->_dateMinuto) {
+                if($horasContinuos[0] < $horasContinuos[1]) {
+                    while($horasContinuos[0] <= $horasContinuos[1]) {
+                        if($horasContinuos[0] == $this->_dateHora) {
                             $this->valido = true;
                             return true;
                         } elseif (isset($detalleExp[1]) == true){
-                            if($this->repeticion($minutosContinuos[0], $detalleExp[1])){
+                            if($this->repeticion($horasContinuos[0], $detalleExp[1])){
                                 return true;
                             }
                         }
 
-                        $minutosContinuos[0]++;
+                        $horasContinuos[0]++;
                     }
                 }
 
             } else {
 
-                if($detalleExp[0] == $this->_dateMinuto) {
+                if($detalleExp[0] == $this->_dateHora) {
                     $this->valido = true;
                     return true;
                 } elseif (isset($detalleExp[1]) == true) {
@@ -123,14 +123,14 @@ class Minuto implements \lib\cron\ParametroInterface {
     }
 
     /**
-     * @param $expMinuto
+     * @param $expHora
      * @param $expFrecuencia
      * @return bool|string
      */
-    public function repeticion($expMinuto, $expFrecuencia) {
+    public function repeticion($expHora, $expFrecuencia) {
 
-        if($expMinuto == "*"){
-            $expMinuto = $expFrecuencia;
+        if($expHora == "*"){
+            $expHora = $expFrecuencia;
         }
 
         /*
@@ -149,17 +149,17 @@ class Minuto implements \lib\cron\ParametroInterface {
         while($contadorFrecuencia > 0) {
 
             /*
-             * m = em + (c * f);
+             * x = ex + (c * f);
              */
-            $minuto = ($expMinuto + ($contadorFrecuencia * $expFrecuencia));
+            $hora = ($expHora + ($contadorFrecuencia * $expFrecuencia));
 
-            if($minuto > self::LIMITE_REPETICON)
-                $minuto = $minuto - self::LIMITE_REPETICON;
+            if($hora > self::LIMITE_REPETICON)
+                $hora = $hora - self::LIMITE_REPETICON;
 
-            if($minuto == self::LIMITE_REPETICON)
-                $minuto = self::VALOR_MINIMO;
+            if($hora == self::LIMITE_REPETICON)
+                $hora = self::VALOR_MINIMO;
 
-            if($this->_dateMinuto == $minuto) {
+            if($this->_dateHora == $hora) {
                 $this->valido = true;
                 return true;
             }
@@ -172,7 +172,7 @@ class Minuto implements \lib\cron\ParametroInterface {
     }
 
     public function __toString() {
-        return "Frecuencia minuto";
+        return "Frecuencia hora";
     }
 
 } 
