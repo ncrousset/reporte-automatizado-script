@@ -22,6 +22,6 @@ interface ParametroInterface {
 
     public function detalle($expresion);
 
-    public function repeticion($expresion);
+    public function repeticion($expMinuto, $expFrecuencia);
 
 } 
