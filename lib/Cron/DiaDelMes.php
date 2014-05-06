@@ -2,7 +2,7 @@
 /**
  * Rudys Natanael Acosta Crousset.
  * User: rudys
- * Date: 04/29/14
+ * Date: 04/28/14
  * Time: 10:35 AM
  */
 
@@ -19,29 +19,29 @@ require_once 'CronInterface.php';
 require_once 'CronParametro.php';
 
 /**
- * Class Hora
+ * Class DiaDelMes
  *
  * @package lib\cron
  * @author Rudys Natanael Acosta Crousset <natanael926@gmail.com>
  */
-class Hora extends \lib\cron\CronParametro implements \lib\cron\CronInterface {
+class DiaDelMes extends \lib\cron\CronParametro implements \lib\cron\CronInterface {
 
     /**
      * El limite de repetición es el numeró máximo,
      * para crear una determinada frecuencia.
      */
-    const LIMITE_REPETICON  = 24;
+    const LIMITE_REPETICON  = 32; // este valor no es correcto pero es un parche hasta nueva modificacion.
 
     /**
      * El valor minimo de los dia de semana
      */
-    const VALOR_MINIMO = 0;
+    const VALOR_MINIMO = 1;
 
     /**
      * @param DateTime $fecha
      */
     public function __construct($fecha) {
-        parent::__construct($fecha->format("H"), self::LIMITE_REPETICON, self::VALOR_MINIMO);
+        parent::__construct($fecha->format("d"), self::LIMITE_REPETICON, self::VALOR_MINIMO);
     }
 
     /**
@@ -59,8 +59,11 @@ class Hora extends \lib\cron\CronParametro implements \lib\cron\CronInterface {
         return $this->validacion;
     }
 
+    /**
+     * @return string
+     */
     public function __toString() {
-        return "Frecuencia hora";
+        return "Frecuencia DiaDelMes";
     }
 
 } 

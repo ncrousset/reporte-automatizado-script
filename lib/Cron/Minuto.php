@@ -2,7 +2,7 @@
 /**
  * Rudys Natanael Acosta Crousset.
  * User: rudys
- * Date: 05/01/14
+ * Date: 05/02/14
  * Time: 10:35 AM
  */
 
@@ -11,7 +11,9 @@ namespace lib\cron;
 /**
  * @see ParametroInterface
  */
-require_once 'ParametroInterface.php';
+require_once 'CronInterface.php';
+
+require_once 'CronParametro.php';
 
 /**
  * Class Minuto
@@ -19,7 +21,7 @@ require_once 'ParametroInterface.php';
  * @package lib\cron
  * @author Rudys Natanael Acosta Crousset <natanael926@gmail.com>
  */
-class Minuto implements \lib\cron\ParametroInterface {
+class Minuto extends \lib\cron\CronParametro implements \lib\cron\CronInterface {
 
     /**
      * El limite de repetición es el numeró máximo,
@@ -28,151 +30,37 @@ class Minuto implements \lib\cron\ParametroInterface {
     const LIMITE_REPETICON  = 60;
 
     /**
-     * El valor minimo de los minuto
+     * El valor minimo de los dia de semana
      */
     const VALOR_MINIMO = 0;
 
     /**
-     * @var null
+     * @param DateTime $fecha
      */
-    private static $_instance = null;
-
-    /**
-     * @var null
-     */
-    private $_dateMinuto = null;
-
-    /**
-     * @var bool
-     */
-    public $valido = false;
-
-    /**
-     * @return Minuto|null
-     */
-    public static function getInstance() {
-
-        if(self::$_instance == null) {
-            self::$_instance = new self();
-        }
-
-        return self::$_instance;
+    public function __construct($fecha) {
+        parent::__construct($fecha->format("i"), self::LIMITE_REPETICON, self::VALOR_MINIMO);
     }
 
     /**
-     *
-     * @param $fecha -- fecha acomparar con la expresion
-     * @param $expresion
-     * @return boolean
+     * @param string $expresion
+     * @return bool|void
      */
-    public function init($fecha, $expresion) {
-
-        $this->_dateMinuto = $fecha->format("i");
-        $this->detalle($expresion);
-
+    public function validacion($expresion) {
+        parent::validacion($expresion);
     }
 
     /**
-     * @return void
+     * @return bool
      */
-    public function detalle($expresion) {
-
-        if($expresion == '*') {
-            $this->valido = true;
-            return true;
-        }
-
-        $expMinutos = explode(",", $expresion);
-
-        foreach($expMinutos as $exp) {
-            $detalleExp = explode("/", $exp);
-
-            // Si la excreción es continua ejp: 1-5
-            if(preg_match("/-/", $detalleExp[0])) {
-                $minutosContinuos = explode("-", $exp);
-
-                if($minutosContinuos[0] < $minutosContinuos[1]) {
-                    while($minutosContinuos[0] <= $minutosContinuos[1]) {
-                        if($minutosContinuos[0] == $this->_dateMinuto) {
-                            $this->valido = true;
-                            return true;
-                        } elseif (isset($detalleExp[1]) == true){
-                            if($this->repeticion($minutosContinuos[0], $detalleExp[1])){
-                                return true;
-                            }
-                        }
-
-                        $minutosContinuos[0]++;
-                    }
-                }
-
-            } else {
-
-                if($detalleExp[0] == $this->_dateMinuto) {
-                    $this->valido = true;
-                    return true;
-                } elseif (isset($detalleExp[1]) == true) {
-
-                    if($this->repeticion($detalleExp[0], $detalleExp[1])){
-                        return true;
-                    }
-                }
-            }
-        }
-
+    public function getValidacion() {
+        return $this->validacion;
     }
 
     /**
-     * @param $expMinuto
-     * @param $expFrecuencia
-     * @return bool|string
+     * @return string
      */
-    public function repeticion($expMinuto, $expFrecuencia) {
-
-        if($expMinuto == "*"){
-            $expMinuto = $expFrecuencia;
-        }
-
-        /*
-         * Si el resido de la división entre el limite repetición y la frecuencia es diferente de 0.
-         *  el ciclo es infinito abarcando todas las posibilidades de la frecuencia. lo mismo
-         * ocurre cuando la frecuencia es 1.
-         */
-        if(fmod(self::LIMITE_REPETICON, $expFrecuencia) != 0 || $expFrecuencia == 1) {
-            $this->valido = true;
-            return true;
-        }
-
-        $contadorFrecuencia = self::LIMITE_REPETICON / $expFrecuencia;
-
-        // Buscamo todos los valores arrojado por
-        while($contadorFrecuencia > 0) {
-
-            /*
-             * m = em + (c * f);
-             */
-            $minuto = ($expMinuto + ($contadorFrecuencia * $expFrecuencia));
-
-            if($minuto > self::LIMITE_REPETICON)
-                $minuto = $minuto - self::LIMITE_REPETICON;
-
-            if($minuto == self::LIMITE_REPETICON)
-                $minuto = self::VALOR_MINIMO;
-
-            if($this->_dateMinuto == $minuto) {
-                $this->valido = true;
-                return true;
-            }
-
-            $contadorFrecuencia--;
-        }
-
-        return false;
-
-    }
-
     public function __toString() {
-        return "Frecuencia minuto";
+        return "Frecuencia hora";
     }
 
 } 
