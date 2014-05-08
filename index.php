@@ -1,9 +1,30 @@
 <?php
 
+/**
+ * @see  \lib\cron\Cron
+ */
 require_once __DIR__ . '/lib/Cron/Cron.php';
+
+require_once __DIR__ . '/lib/Reporte/ColaTarea.php';
+
 use \lib\cron\Cron as Cron;
 
-Cron::getInstance()->getAprobacion("4-8/5 25/6 25/2 5/6 7");
+use \lib\reporte\ColaTarea as ColaTarea;
 
-//var_dump(preg_match("/,/", "h5,/5,"));
+$estructuraReporte = array(
+  array( "id" => 1, 'url' => "url", 'programacion' => '* * * * *' ),
+  array( "id" => 2, 'url' => "url", 'programacion' => '* * * * *' ),
+  array( "id" => 3, 'url' => "url", 'programacion' => '* * * * *' ),
+);
+
+
+if(Cron::validacion("* * * * *") && ColaTarea::validacion(2)) {
+
+    $url = __DIR__ . '/archivoColaTarea/2.txt';
+    exec("php prueba.php > " . $url . " &");
+    echo 'validacion correcta';
+
+} else{
+    echo 'Validacion incorrecta';
+}
 
